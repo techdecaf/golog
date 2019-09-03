@@ -1,0 +1,30 @@
+options:
+  log: true # debug, info, error, silent
+
+# variables are resolved in the following order:
+# variables declared as part of tasks
+# environmental variables that exist before the task is run
+# global variables listed here.
+variables:
+  CI_PROJECT_NAME: golog
+  CI_COMMIT_TAG: exec(git describe --tags --always --dirty --abbrev=0)
+  CI_COMMIT_REF_NAME: exec(git rev-parse --abbrev-ref HEAD)
+  CI_COMMIT_SHA: exec(git rev-parse HEAD)
+
+tasks:
+  default:
+    description: is the task that runs when no tasks have been specified. `tasks run` == `tasks run default`
+    commands: [tasks list]
+
+  test:
+    description: run go tests
+    pre: [clean dependencies]
+    commands: [go test]
+
+  dependencies:
+    description: install all required dependencies
+    commands: [go get, go install]
+
+  clean:
+    description: removes all files listed in .gitignore
+    commands: ["rm -rf dist"]

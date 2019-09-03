@@ -16,21 +16,21 @@ type Log struct {
 // LogMessage message structure
 type LogMessage struct {
 	Action  string
-	Message string
+	Message interface{}
 }
 
 // Info displays information about the program durring runtime.
-func (log *Log) Info(action, text string) {
-	log.print(LogMessage{Action: action, Message: text}, false)
+func (log *Log) Info(action string, text interface{}) string {
+	return log.print(LogMessage{Action: action, Message: text}, false)
 }
 
 // Fatal logs to os.Stderr and exits 1
-func (log *Log) Fatal(action, text string) {
-	log.print(LogMessage{Action: action, Message: text}, true)
+func (log *Log) Fatal(action string, err interface{}) string {
+	return log.print(LogMessage{Action: action, Message: err}, true)
 }
 
-func (log *Log) print(m LogMessage, exit bool) {
-	msg := fmt.Sprintf("[%s][%s] %s", log.Name, m.Action, m.Message)
+func (log *Log) print(m LogMessage, exit bool) string {
+	msg := fmt.Sprintf("[%s][%s] %v", log.Name, m.Action, m.Message)
 
 	printInfo := color.New(color.FgGreen)
 	printError := color.New(color.FgRed)
@@ -42,4 +42,6 @@ func (log *Log) print(m LogMessage, exit bool) {
 		os.Exit(1)
 	}
 	printInfo.Fprintln(os.Stdout, msg)
+
+	return msg
 }
